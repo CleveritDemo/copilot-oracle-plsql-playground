@@ -80,7 +80,7 @@ Para conectarnos, nos dirigimos directamente a la extension de **Oracle SQL Deve
 > **Error de conexion: SYSADMIN wrong role**  
 > Cuando se realiza una conexion utilizando el usuario de sistema `SYS`, es requerido que se realize la conexion utilizando el rol de: `SYSDBA` ya que este usuario esta destinado a operaciones de administracion completa de la base de datos.
 
-### 👤 Usuario administrador de la bibliotecaÑ AdminBL
+### 👤 Usuario administrador de la biblioteca AdminBL
 Usaremos Copilot para pedirle que nos genere los scripts SQL que permitirán la creación de un usuario administrador de la biblioteca. Este usuario se encargará de la creación de las tablas y el manejo de procedimientos almacenados. Lo haremos mediante el siguiente prompt:
 
 `Crea un usuario llamado AdminBL, que tenga permisos para crear, eliminar, consultar, actualizar tablas. Tambien debe tener permisos para crear, eliminar, ejecutar procedimientos almacenados y Crear, eliminar y modificar Triggers. Estos scrips deben ser creados para una base de datos Oracle XE.`
