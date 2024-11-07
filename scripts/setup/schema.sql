@@ -37,3 +37,6 @@ CREATE TABLE PRESTAMOS (
 
 -- Modifca la tabla LIBROS para cambiar la longitud de la columna ISBN a 22
 ALTER TABLE LIBROS MODIFY ISBN VARCHAR2(22);
+
+-- Modifica la tabla PRESTAMOS para agregar la columna Devolucion
+ALTER TABLE PRESTAMOS ADD (Devolucion CHAR(1) DEFAULT 'F' CHECK (Devolucion IN ('T', 'F')));

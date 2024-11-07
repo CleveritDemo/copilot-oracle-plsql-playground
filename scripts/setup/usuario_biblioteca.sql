@@ -20,7 +20,7 @@ GRANT CREATE TRIGGER TO AdminBL;
 GRANT ALTER ANY TRIGGER TO AdminBL;
 GRANT DROP ANY TRIGGER TO AdminBL;
 
--- Asignar cuota ilimitada
+-- Asignar cuota ilimitada (Error en caso de no poder insertar usuarios)
 ALTER USER AdminBL QUOTA UNLIMITED ON USERS;
 
 -- Eliminar usuario
