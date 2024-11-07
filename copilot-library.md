@@ -6,6 +6,7 @@ Este diagrama presenta un pequeño modelo entidad relacion el cual representa la
 erDiagram
     LIBROS {
         NUMBER LibroID PK
+        VARCHAR ISBN UK
         VARCHAR Titulo
         VARCHAR Autor
         VARCHAR Genero
@@ -13,13 +14,17 @@ erDiagram
     }
     USUARIOS {
         NUMBER UsuarioID PK
+        VARCHAR DNI UK
         VARCHAR Nombre
-        VARCHAR Email
+        VARCHAR Email UK
+        VARCHAR Telefono
+        VARCHAR NombreUsuario UK
     }
     BIBLIOTECARIOS {
         NUMBER BibliotecarioID PK
         VARCHAR Nombre
         VARCHAR Email
+        NUMBER Codigo UK
     }
     PRESTAMOS {
         NUMBER PrestamoID PK
@@ -32,5 +37,4 @@ erDiagram
     LIBROS ||--o{ PRESTAMOS : "tiene"
     USUARIOS ||--o{ PRESTAMOS : "realiza"
     BIBLIOTECARIOS ||--o{ PRESTAMOS : "autoriza"
-
 ```
