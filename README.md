@@ -439,4 +439,12 @@ END;
 /
 ```
 
+## 👾 Bonus.!!
+
+Ya en este punto hemos completado las funcionalidades básicas del modelo de biblioteca propuesto, sin embargo, se puede agregar algo mas de visibilidad. Es por eso que se propone apoyarnos con copilot para generar las siguientes consultas.
+
+- Obtener el listado de usuarios morosos: Usuarios que poseen prestamos pendientes.
+- Obtener el listado de libros mas prestados.
+- Crear un procedimiento para el registro de nuevos libros.
+
 
