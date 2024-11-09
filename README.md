@@ -35,13 +35,16 @@ Para ejecutar una instancia de Oracle SQL Express Edition (Oracle XE), emplearem
 - Descarga de Oracle XE: `docker pull container-registry.oracle.com/database/express:21.3.0-xe`
 - Descargada la imagen, crea un nuevo contenedor que ejecute la instancia de Oracle XE con el siguiente comando:
 ```sh
-docker run -d --name "oracle-xe" -p 1521:1521 -p 5500:5500 -e ORACLE_PWD="Password123" -e ORACLE_CHARACTERSET="AL32UTF8" container-registry.oracle.com/database/express:21.3.0-xe`
+docker run -d --name "oracle-xe" -p 1521:1521 -p 5500:5500 -e ORACLE_PWD="Password123" -e ORACLE_CHARACTERSET="AL32UTF8" container-registry.oracle.com/database/express:21.3.0-xe
 ```
 
-> **NOTA: Puertos Oracle XE**
-> Recordemos que las bases de datos Oracle tienen una herramienta de administración web, la cual puede ser accedida mediante el puerto 5500. Es por esto por lo que se habilita el mapeo de dos puertos en este contenedor y la máquina host.
+> ### ⚠️ **ADVERTENCIA: Instalacion en sistemas MacOS AppleSilicon**  
+> Oracle Express Edition y otras versiones en general. No son compatibles con la arquitectura ARM existente en los chips mas recientes de Apple (M1, M2, etc...). Por lo que ejecutar directamente el comando para construir un contenedor resultara en un fallo al intentar conectar a la base de datos y un fallo interno en la instancia de Oracle.  
+>
+> Para ver como podemos **ejecutar una instancia** de Oracle en computadores MacOS con arquitectura ARM Apple Silicon clic **[aqui](./apple-steps.md)**
 
-> **NOTA 2: Versiones de Oracle XE**
+
+> ### ℹ️ **Info: Versiones de Oracle XE**  
 > En caso de querer descargar una imagen diferente, dirigirse al container registry público de Oracle y ubicar las distintas versiones de Oracle Express Edition disponibles.
 
 ## 🔨 Paso 2. Instalación de Oracle SQL Developer Extension for VS Code. (Si Aplica)
@@ -72,7 +75,7 @@ Para conectarnos, nos dirigimos directamente a la extension de **Oracle SQL Deve
 | Hostname            | localhost     |
 | Port                | 1521          |
 | Type                | Service Name  |
-| Service Name        | XE            |
+| Service Name        | XEPDB1        |
 
 (**) _El valor de la contraseña es sugerido pero puede modificarse por el valor que se necesite_
 
