@@ -44,7 +44,7 @@ docker run -d --name "oracle-xe" -p 1521:1521 -p 5500:5500 -e ORACLE_PWD="Passwo
 > Para ver como podemos **ejecutar una instancia** de Oracle en computadores MacOS con arquitectura ARM Apple Silicon clic **[aqui](./apple-steps.md)**
 
 
-> ### ℹ️ **Info: Versiones de Oracle XE**  
+> ### 🚧 **Info: Versiones de Oracle XE**  
 > En caso de querer descargar una imagen diferente, dirigirse al container registry público de Oracle y ubicar las distintas versiones de Oracle Express Edition disponibles.
 
 ## 🔨 Paso 2. Instalación de Oracle SQL Developer Extension for VS Code. (Si Aplica)
