@@ -1,71 +1,71 @@
-# Potenciando PL/SQL con SQL Developer + Visual Studio y Github Copilot.
+# Empowering PL/SQL with SQL Developer + Visual Studio and GitHub Copilot.
 
-## 1. 💫 Información general
-En este práctico trabajaremos sobre un modelo de biblioteca. En este escenario, nos volveremos los desarrolladores y mantenedores del sistema de base de datos de una biblioteca pública. Los administradores de la biblioteca quieren implementar un sistema de base de datos que permita las siguientes capacidades:
-Registrar nuevos prestamos de libros.
-Devolver los libros.
-Identificar cuantos prestamos posee una persona.
-Generar reportes de los libros mas prestados.
+## 1. 💫 Overview
+In this hands-on, we will work on a library model. In this scenario, we will become the developers and maintainers of the database system of a public library. The library administrators want to implement a database system that allows the following capabilities:
+Register new book loans.
+Return books.
+Identify how many loans a person has.
+Generate reports of the most loaned books.
 
-Para ello, se ha propuesto el siguiente modelo de base de datos para cumplir con el requerimiento solicitado. 
+For this, the following database model has been proposed to meet the requested requirement.
 
-[Diagrama Entidad relacion](./copilot-library.md)
+[Entity-Relationship Diagram](./copilot-library.md)
 
-## 🎯️ Objetivos.
-- Configurar SQL Developer Extension for Visual Studio Code.
-- Construir base de datos mediante GH Copilot usando como base diagrama ER desde mermaid.
-- Aprender como usar GH Copilot para la generación de procedimientos almacenados.
-- Aprender como usar GH Copilot para la construcción de triggers de validación de datos. (UPDATE, INSERT, DELETE).
-- Aprender a utilizar GH Copilot para la generación de reportes.
-Optimización de consultas con GH Copilot.
+## 🎯️ Objectives.
+- Configure SQL Developer Extension for Visual Studio Code.
+- Build a database using GH Copilot based on an ER diagram from mermaid.
+- Learn how to use GH Copilot for generating stored procedures.
+- Learn how to use GH Copilot for building data validation triggers. (UPDATE, INSERT, DELETE).
+- Learn how to use GH Copilot for generating reports.
+Optimize queries with GH Copilot.
 
-## 🛠️ Requisitos de instalación.
+## 🛠️ Installation requirements.
 - Visual Studio Code.
 - Docker Desktop.
 - Oracle SQL Developer Extension for VS Code
-- Licencia de GitHub Copilot Activa.
-- Extensión de GitHub Copilot para VS Code instalada.
+- Active GitHub Copilot License.
+- GitHub Copilot extension for VS Code installed.
 
 
-# 🖥️ Ejecución paso a paso.
+# 🖥️ Step-by-step
 
-## 🔨 Paso 1. Configuración de la instancia Oracle Express Edition (si aplica)
-Para ejecutar una instancia de Oracle SQL Express Edition (Oracle XE), emplearemos Docker. El cual es una herramienta para gestionar y ejecutar contenedores. Para instalar una imagen de Oracle XE debemos realizar los siguientes pasos:
+## 🔨 Step 1. Configuration of the Oracle Express Edition instance (if applicable)
+To run an instance of Oracle SQL Express Edition (Oracle XE), we will use Docker, which is a tool for managing and running containers. To install an Oracle XE image, we must perform the following steps:
 
-- Descarga de Oracle XE: `docker pull container-registry.oracle.com/database/express:21.3.0-xe`
-- Descargada la imagen, crea un nuevo contenedor que ejecute la instancia de Oracle XE con el siguiente comando:
+- Download Oracle XE: `docker pull container-registry.oracle.com/database/express:21.3.0-xe`
+- Once the image is downloaded, create a new container that runs the Oracle XE instance with the following command:
 ```sh
 docker run -d --name "oracle-xe" -p 1521:1521 -p 5500:5500 -e ORACLE_PWD="Password123" -e ORACLE_CHARACTERSET="AL32UTF8" container-registry.oracle.com/database/express:21.3.0-xe
 ```
 
-> ### ⚠️ **ADVERTENCIA: Instalacion en sistemas MacOS AppleSilicon**  
-> Oracle Express Edition y otras versiones en general. No son compatibles con la arquitectura ARM existente en los chips mas recientes de Apple (M1, M2, etc...). Por lo que ejecutar directamente el comando para construir un contenedor resultara en un fallo al intentar conectar a la base de datos y un fallo interno en la instancia de Oracle.  
+> ### ⚠️ **WARNING: Installation on MacOS Apple Silicon systems**  
+> Oracle Express Edition and other versions in general are not compatible with the ARM architecture present in the latest Apple chips (M1, M2, etc.). Therefore, directly running the command to build a container will result in a failure to connect to the database and an internal failure in the Oracle instance.  
 >
-> Para ver como podemos **ejecutar una instancia** de Oracle en computadores MacOS con arquitectura ARM Apple Silicon clic **[aqui](./apple-steps.md)**
+> To see how we can **run an instance** of Oracle on MacOS computers with ARM Apple Silicon architecture click **[here](./apple-steps.md)**
 
 
-> ### 🚧 **Info: Versiones de Oracle XE**  
-> En caso de querer descargar una imagen diferente, dirigirse al container registry público de Oracle y ubicar las distintas versiones de Oracle Express Edition disponibles.
+> ### 🚧 **Info: Oracle XE Versions**  
+> If you want to download a different image, go to the Oracle public container registry and locate the different available versions of Oracle Express Edition.
 
-## 🔨 Paso 2. Instalación de Oracle SQL Developer Extension for VS Code. (Si Aplica)
+## 🔨 Step 2. Installation of Oracle SQL Developer Extension for VS Code. (If Applicable)
 
-**Extension SQL Developer para VS Code:** https://marketplace.visualstudio.com/items?itemName=Oracle.sql-developers
+**SQL Developer Extension for VS Code:** https://marketplace.visualstudio.com/items?itemName=Oracle.sql-developers
 
-**Pasos para la instalación.**
-- Abrir Visual Studio Code.
-- Dirigirse al panel de extensiones.
-- Buscar la extensión: Oracle SQL Developer Extension for VS Code.
-- Hacer click en Install.
+**Installation steps.**
+- Open Visual Studio Code.
+- Go to the extensions panel.
+- Search for the extension: Oracle SQL Developer Extension for VS Code.
+- Click on Install.
 
-> **ADVERTENCIA**  
-> Esta extensión puede presentar conflictos con otras extensiones SQL similares dentro de Visual Studio Code como por ejemplo la extensión oficial de **Microsoft SQL Server** provista por Microsoft. Se aconseja deshabilitarlas para hacer uso de SQL Developer para Visual Studio Code.
+> **WARNING**  
+> This extension may conflict with other similar SQL extensions within Visual Studio Code, such as the official **Microsoft SQL Server** extension provided by Microsoft. It is recommended to disable them to use SQL Developer for Visual Studio Code.
 
-## 🔨 Paso 3. Conexion a la base de datos
+## 🔨 Step 3. Database connection
 
-Para conectarnos, nos dirigimos directamente a la extension de **Oracle SQL Developer** y realizamos clic sobre el icono de **"+"** esto desplegara una pestaña donde introduciremos los parámetros de conexión. Estos parámetros, deben coincidir con los definidos en el **paso 1.**
+To connect, we go directly to the **Oracle SQL Developer** extension and click on the **"+"** icon. This will open a tab where we will enter the connection parameters. These parameters must match those defined in **step 1.**
 
-**Parametros de Conexion:**
-| Parámetro           | Valor         |
+**Connection Parameters:**
+| Parameter           | Value         |
 |---------------------|---------------|
 | Connection Name     | SYSADMIN      |
 | Authentication Type | Default       |
@@ -77,24 +77,24 @@ Para conectarnos, nos dirigimos directamente a la extension de **Oracle SQL Deve
 | Type                | Service Name  |
 | Service Name        | XEPDB1        |
 
-(**) _El valor de la contraseña es sugerido pero puede modificarse por el valor que se necesite_
+(**) _The password value is suggested but can be modified as needed_
 
-### 🚧 Resolucion de problemas
-> **Error de conexion: SYSADMIN wrong role**  
-> Cuando se realiza una conexion utilizando el usuario de sistema `SYS`, es requerido que se realize la conexion utilizando el rol de: `SYSDBA` ya que este usuario esta destinado a operaciones de administracion completa de la base de datos.
+### 🚧 Troubleshooting
+> **Connection error: SYSADMIN wrong role**  
+> When connecting using the system user `SYS`, it is required to connect using the role: `SYSDBA` as this user is intended for full database administration operations.
 
-### 👤 Usuario administrador de la biblioteca AdminBL
-Usaremos Copilot para pedirle que nos genere los scripts SQL que permitirán la creación de un usuario administrador de la biblioteca. Este usuario se encargará de la creación de las tablas y el manejo de procedimientos almacenados. Lo haremos mediante el siguiente prompt:
+### 👤 Library administrator user AdminBL
+We will use Copilot to generate the SQL scripts that will allow the creation of a library administrator user. This user will be responsible for creating tables and managing stored procedures. We will do it using the following prompt:
 
-`Crea un usuario llamado AdminBL, que tenga permisos para crear, eliminar, consultar, actualizar tablas. Tambien debe tener permisos para crear, eliminar, ejecutar procedimientos almacenados y Crear, eliminar y modificar Triggers. Estos scrips deben ser creados para una base de datos Oracle XE.`
+`Create a user named AdminBL, who has permissions to create, delete, query, and update tables. They should also have permissions to create, delete, and execute stored procedures, and create, delete, and modify triggers. These scripts should be created for an Oracle XE database.`
 
-_Respuesta de Copilot:_
+_Copilot's response:_
 
 ```SQL
--- Crear el usuario AdminBL
+-- Create the user AdminBL
 CREATE USER AdminBL IDENTIFIED BY your_password;
 
--- Otorgar permisos para crear, eliminar, consultar y actualizar tablas
+-- Grant permissions to create, delete, query, and update tables
 GRANT CREATE TABLE TO AdminBL;
 GRANT DROP TABLE TO AdminBL;
 GRANT SELECT ANY TABLE TO AdminBL;
@@ -102,196 +102,204 @@ GRANT INSERT ANY TABLE TO AdminBL;
 GRANT UPDATE ANY TABLE TO AdminBL;
 GRANT DELETE ANY TABLE TO AdminBL;
 
--- Otorgar permisos para crear, eliminar y ejecutar procedimientos almacenados
+-- Grant permissions to create, delete, and execute stored procedures
 GRANT CREATE PROCEDURE TO AdminBL;
 GRANT DROP PROCEDURE TO AdminBL;
 GRANT EXECUTE ANY PROCEDURE TO AdminBL;
 
--- Otorgar permisos para crear, eliminar y modificar triggers
+-- Grant permissions to create, delete, and modify triggers
 GRANT CREATE TRIGGER TO AdminBL;
 GRANT DROP TRIGGER TO AdminBL;
 GRANT ALTER ANY TRIGGER TO AdminBL;
 
--- Otorgar permisos adicionales necesarios
+-- Grant additional necessary permissions
 GRANT CREATE SESSION TO AdminBL;
 ```
 
 > **Troubleshooting - Error: ORA-65096**  
-> Cuando intentamos crear el usuario de la biblioteca obtenemos el siguiente mensaje de error:  
+> When we try to create the library user, we get the following error message:  
 > Error report - ORA-65096: invalid common user or role name https://docs.oracle.com/error-help/db/ora-65096/65096. 00000 - "common user or role name must start with prefix %s"  
 > *Cause: An attempt is being made to create a common user or role without the correct prefix as specified in the COMMON_USER_PREFIX parameter.*
 >
-> Se debe a que estamos conectados a la instancia de la base de datos en entorno multitenant. Para solucionar esto, simplemente se deben editar los parámetros de la conexión hacia la base de datos y modificar el valor del **SERVICE NAME** al valor de: **XEPDB1**
+> This is because we are connected to the database instance in a multitenant environment. To fix this, simply edit the connection parameters to the database and change the **SERVICE NAME** value to: **XEPDB1**
 
 
-> **Sustitución de Contraseña.**  
-> Es necesario sustituir el valor de la contraseña en el script por el valor que queramos utilizar como clave. Para este caso usaremos biblioteca123 por lo que la instruccion deberia quedar asi:
+> **Password Replacement.**  
+> It is necessary to replace the password value in the script with the value we want to use as the key. For this case, we will use biblioteca123, so the instruction should look like this:
 > `CREATE USER AdminBL IDENTIFIED BY "biblioteca123";`
 
-Una vez creado el nuevo usuario **AdminBL**. Nos conectaremos del mismo modo que realizamos la conexión anterior.
+Once the new user **AdminBL** is created, we will connect in the same way as we did the previous connection.
 
-## 🔨 Paso 4. Creación del esquema
+## 🔨 Step 4. Schema creation
 
-Disponemos el modelo entidad relación creado con Mermaid para poder generar las instrucciones SQL que creen el esquema en la base de datos utilizaremos Copilot para traducir el diagrama de Mermaid a código SQL compatible con Oracle SQL.
+We have the entity-relationship model created with Mermaid to generate the SQL instructions that create the schema in the database. We will use Copilot to translate the Mermaid diagram into SQL code compatible with Oracle SQL.
 
-> **NOTA: Usuario AdminBL**  
-> A partir de este punto todos los scripts seran ejecutados con el usuario **AdminBL**, no se debe usar el usuario SYS para continuar con las operaciones.
+> **NOTE: AdminBL User**  
+> From this point on, all scripts will be executed with the **AdminBL** user. The SYS user should not be used to continue operations.
 
-_Prompt para generar el esquema de tablas:_
+_Prompt to generate the table schema:_
 
-`Hola copilot, para esta tarea te proporciono un archivo markdown el cual contiene un diagrama entidad relacion creado con la herramienta Mermaid. Tu objetivo es interpretar, entender y procesar ese diagrama. Una vez hayas procesado el diagrama, necesito que construyas los scrpts SQL que permitiran la creacion de las tablas, relaciones, restricciones y demas elementos que permitan la creacion de una base de datos basada 100% en ese diagrama. Es indispensable que todos los scripts que generes sean 100% compatibles con bases de datos Oracle SQL Xpress Edition. #file:biblioteca-bd.md`
+`Hello Copilot, for this task I provide you with a markdown file which contains an entity-relationship diagram created with the Mermaid tool. Your goal is to interpret, understand, and process that diagram. Once you have processed the diagram, I need you to construct the SQL scripts that will allow the creation of tables, relationships, constraints, and other elements that will enable the creation of a database based 100% on that diagram. It is essential that all the scripts you generate are 100% compatible with Oracle SQL Express Edition databases. #file:copilot-library.md`
 
-Le indicamos a copilot que ajuste un poco el script para que modifique el tamaño de algunos campos: 
+We instruct Copilot to adjust the script slightly to modify the size of some fields:
 
-`Realiza algunas modificaciones al script. El ISBN en la tabla LIBROS es un codigo alfanumerico que maximo ocupa 25 caracteres. El campo del  nombre de usuario en la tabla USUARIO puede contener hasta maximo de 20 caracteres. El codigo numerico de los bibliotecarios es un codigo numerico unico que puede tener un tamaño de 8 digitos.`
+`Make some modifications to the script. The ISBN in the BOOKS table is an alphanumeric code that can occupy a maximum of 25 characters. The username field in the USUARIO table can contain up to a maximum of 20 characters. The numeric code of the librarians is a unique numeric code that can have a size of 8 digits.`
 
-_Salida generada por GitHub Copilot:_
+_Generated output by GitHub Copilot:_
 
 ```SQL
-CREATE TABLE LIBROS (
-    LibroID NUMBER PRIMARY KEY,
-    ISBN VARCHAR2(13) UNIQUE,
-    Titulo VARCHAR2(255),
-    Autor VARCHAR2(255),
-    Genero VARCHAR2(100),
-    Disponibles NUMBER
+-- Create the BOOKS table with modified ISBN length
+CREATE TABLE BOOKS (
+    BookID NUMBER PRIMARY KEY,
+    ISBN VARCHAR2(25) UNIQUE,
+    Title VARCHAR2(255),
+    Author VARCHAR2(255),
+    Genre VARCHAR2(100),
+    Available NUMBER
 );
 
-CREATE TABLE USUARIOS (
-    UsuarioID NUMBER PRIMARY KEY,
+-- Create the USERS table with modified Username length
+CREATE TABLE USERS (
+    UserID NUMBER PRIMARY KEY,
     DNI VARCHAR2(20) UNIQUE,
-    Nombre VARCHAR2(255),
+    Name VARCHAR2(255),
     Email VARCHAR2(255) UNIQUE,
-    Telefono VARCHAR2(20),
-    NombreUsuario VARCHAR2(20) UNIQUE
+    Phone VARCHAR2(20),
+    Username VARCHAR2(20) UNIQUE
 );
 
-CREATE TABLE BIBLIOTECARIOS (
-    BibliotecarioID NUMBER PRIMARY KEY,
-    Nombre VARCHAR2(255),
+-- Create the LIBRARIANS table with modified Code length
+CREATE TABLE LIBRARIANS (
+    LibrarianID NUMBER PRIMARY KEY,
+    Name VARCHAR2(255),
     Email VARCHAR2(255),
-    Codigo NUMBER(8) UNIQUE
+    Code NUMBER(8) UNIQUE
 );
 
-CREATE TABLE PRESTAMOS (
-    PrestamoID NUMBER PRIMARY KEY,
-    LibroID NUMBER,
-    UsuarioID NUMBER,
-    BibliotecarioID NUMBER,
-    FechaPrestamo DATE,
-    FechaDevolucion DATE,
-    CONSTRAINT fk_libro FOREIGN KEY (LibroID) REFERENCES LIBROS(LibroID),
-    CONSTRAINT fk_usuario FOREIGN KEY (UsuarioID) REFERENCES USUARIOS(UsuarioID),
-    CONSTRAINT fk_bibliotecario FOREIGN KEY (BibliotecarioID) REFERENCES BIBLIOTECARIOS(BibliotecarioID)
+-- Create the LOANS table
+CREATE TABLE LOANS (
+    LoanID NUMBER PRIMARY KEY,
+    BookID NUMBER,
+    UserID NUMBER,
+    LibrarianID NUMBER,
+    LoanDate DATE,
+    ReturnDate DATE,
+    CONSTRAINT fk_book FOREIGN KEY (BookID) REFERENCES BOOKS(BookID),
+    CONSTRAINT fk_user FOREIGN KEY (UserID) REFERENCES USERS(UserID),
+    CONSTRAINT fk_librarian FOREIGN KEY (LibrarianID) REFERENCES LIBRARIANS(LibrarianID)
 );
 ```
 
-## 🔨 Paso 5. Generación de datos.
+## 🔨 Step 5. Data generation.
 
-Procedemos a llenar de datos la base de datos de la biblioteca. Utilizando GitHub Copilot, se construirán scripts SQL que cargarán de información las tablas.
+We proceed to fill the library database with data. Using GitHub Copilot, SQL scripts will be constructed to load information into the tables.
 
-_Prompt para generar los datos de prueba:_
+_Prompt to generate test data:_
 
-`@workspace /new Genera una carpeta llamada data, que contenga scripts SQL de insersion de datos para las tablas existentes en el archivo #file:schema.sql La tabla LIBROS debe contener 10 diferentes libros ningun libro puede repetirse. La tabla Usuarios debe tener al menos 20 usuarios. La tabla bibliotecarios debe contener 7 bibliotecarios. Para la tabla prestamos, no insertes ningun registro. La carpeta data es la carpeta principal del proyecto, los scripts deben colocarse dentro de esa carpeta. Un usuario no puede ser bibliotecario y viceversa. Todos los scripts deben ser creados con la sintaxis de Oracle SQL y en idioma español.`
+`@workspace /new Generate a folder called data, which contains SQL insertion scripts for the tables existing in the file #file:schema.sql. The BOOKS table must contain 10 different books, no book can be repeated. The USERS table must have at least 20 users. The LIBRARIANS table must contain 7 librarians. Do not insert any records into the LOANS table. The data folder is the main folder of the project, the scripts must be placed inside that folder. A user cannot be a librarian and vice versa. All scripts must be created with Oracle SQL syntax.`
 
-Con `@workspace /new` se generará una estructura de archivos nueva. Se debe hacer clic en el botón **Create Workspace** y colocar la estructura generada en el directorio raíz del repositorio de trabajo actual.
+With `@workspace /new` a new file structure will be generated. You must click on the **Create Workspace** button and place the generated structure in the root directory of the current working repository.
 
-La salida de este script debe retornar una carpeta llamada Data la cual contiene tres scripts SQL de inserción de datos para las tablas **USUARIOS**, **LIBROS** y **BIBLIOTECARIOS**.
+The output of this script should return a folder called Data which contains three SQL insertion scripts for the **USERS**, **BOOKS**, and **LIBRARIANS** tables.
 
-Hecho esto, simplemente debemos ejecutar los scripts en la base de datos usando el usuario **AdminBL**.
+Once this is done, we simply need to execute the scripts in the database using the **AdminBL** user.
 
-> **ERROR: Cuota en inserción de datos.**  
-> Si se presenta el error de cuota no disponible para el usuario logueado al momento de insertar datos, se solventa con la siguiente instrucción SQL:  
+> **ERROR: Quota on data insertion.**  
+> If the error of quota not available for the logged-in user occurs when inserting data, it is resolved with the following SQL instruction:  
 > `ALTER USER AdminBL QUOTA UNLIMITED ON USERS;`  
-> Esta instruccion permite una cuota ilimitada al usuario AdminBL.
+> This instruction allows unlimited quota to the AdminBL user.
 
-## 🔨 Paso 6. Procedimiento de Registro de prestamos.
+## 🔨 Step 6. Loan Registration Procedure.
 
-La principal operación de la biblioteca es prestar libros, usaremos a GitHub Copilot para generar un procedimiento que permita registrar prestamos de libros en la biblioteca mediante el siguiente prompt:
+The main operation of the library is to loan books. We will use GitHub Copilot to generate a procedure that allows registering book loans in the library using the following prompt:
 
-`Quiero crear un nuevo procedimiento almacenado en PL/SQL que me permita registrar prestamos de libros. Quiero que el procedimiento reciba como parametros de entrada el DNI del usuario que solicita el prestamo, el codigo ISBN del libro y el codigo del bibliotecario que autoriza/realiza el prestamo. #file:schema.sql. Este prodecimiento se llamada RegistrarPrestamo`
+`I want to create a new stored procedure in PL/SQL that allows me to register book loans. I want the procedure to receive as input parameters the DNI of the user requesting the loan, the ISBN code of the book, and the code of the librarian authorizing/performing the loan. #file:schema.sql. This procedure will be called RegisterLoan`
 
-_Codigo sugerido por Copilot:_
+_Code suggested by Copilot:_
 
 ```SQL
--- Se genera una secuencia autoincrementada en valores de 1 llamada PRESTAMOS_SEQ
+-- An auto-increment sequence with values of 1 called PRESTAMOS_SEQ is generated
 CREATE SEQUENCE PRESTAMOS_SEQ START WITH 1 INCREMENT BY 1;
 ```
 
 ```SQL
--- Codigo del procedimiento almacenado para registrar prestamo.
-CREATE OR REPLACE PROCEDURE RegistrarPrestamo (
-    p_DNI IN VARCHAR2,
-    p_ISBN IN VARCHAR2,
-    p_CodigoBibliotecario IN NUMBER
+CREATE OR REPLACE PROCEDURE RegisterLoan (
+    p_DNI IN USERS.DNI%TYPE,
+    p_ISBN IN BOOKS.ISBN%TYPE,
+    p_LibrarianCode IN LIBRARIANS.Code%TYPE
 ) AS
-    v_UsuarioID USUARIOS.UsuarioID%TYPE;
-    v_LibroID LIBROS.LibroID%TYPE;
-    v_BibliotecarioID BIBLIOTECARIOS.BibliotecarioID%TYPE;
+    v_UserID USERS.UserID%TYPE;
+    v_BookID BOOKS.BookID%TYPE;
+    v_LibrarianID LIBRARIANS.LibrarianID%TYPE;
 BEGIN
-    -- Obtener el UsuarioID a partir del DNI
-    SELECT UsuarioID INTO v_UsuarioID
-    FROM USUARIOS
+    -- Get the UserID from the DNI
+    SELECT UserID INTO v_UserID
+    FROM USERS
     WHERE DNI = p_DNI;
 
-    -- Obtener el LibroID a partir del ISBN
-    SELECT LibroID INTO v_LibroID
-    FROM LIBROS
+    -- Get the BookID from the ISBN
+    SELECT BookID INTO v_BookID
+    FROM BOOKS
     WHERE ISBN = p_ISBN;
 
-    -- Obtener el BibliotecarioID a partir del Código
-    SELECT BibliotecarioID INTO v_BibliotecarioID
-    FROM BIBLIOTECARIOS
-    WHERE Codigo = p_CodigoBibliotecario;
+    -- Get the LibrarianID from the Code
+    SELECT LibrarianID INTO v_LibrarianID
+    FROM LIBRARIANS
+    WHERE Code = p_LibrarianCode;
 
-    -- Insertar el nuevo préstamo
-    INSERT INTO PRESTAMOS (PrestamoID, LibroID, UsuarioID, BibliotecarioID, FechaPrestamo)
-    VALUES (PRESTAMOS_SEQ.NEXTVAL, v_LibroID, v_UsuarioID, v_BibliotecarioID, SYSDATE);
+    -- Insert the loan record
+    INSERT INTO LOANS (LoanID, BookID, UserID, LibrarianID, LoanDate)
+    VALUES (LOANS_SEQ.NEXTVAL, v_BookID, v_UserID, v_LibrarianID, SYSDATE);
 
-    -- Confirmar la transacción
+    -- Update the availability of the book
+    UPDATE BOOKS
+    SET Available = Available - 1
+    WHERE BookID = v_BookID;
+
     COMMIT;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20001, 'Usuario, libro o bibliotecario no encontrado.');
+        RAISE_APPLICATION_ERROR(-20001, 'User, Book, or Librarian not found');
     WHEN OTHERS THEN
         ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20002, 'Error al registrar el préstamo.');
-END RegistrarPrestamo;
+        RAISE;
+END RegisterLoan;
 /
 ```
 
-Para emplear el procedimiento almacenado basta con invocarlo desde una consulta o un bloque anónimo. Le pediremos a Copilot que construya un bloque anónimo donde solicite datos de entrada al usuario para ejecutar el procedimiento.
+To use the stored procedure, it is enough to invoke it from a query or an anonymous block. We will ask Copilot to construct an anonymous block where it requests input data from the user to execute the procedure.
 
-_Prompt para generar bloque anonimo PL/SQL y ejecucion del procedimiento_
+
+
+_Prompt to generate anonymous PL/SQL block and procedure execution_
 
 ```
-Construye un bloque anonimo de PL/SQL que ejecute el procedimiento almacenado que acabamos de generar. Y que solicite al usuario los parametros necesarios para que el procedimiento almacenado funcione correctamente.
+Construct an anonymous PL/SQL block that executes the stored procedure we just generated. It should request the necessary parameters from the user for the stored procedure to function correctly.
 ```
-_Codigo generado por Copilot:_
+_Code generated by Copilot:_
 
 ```SQL
 DECLARE
-    v_DNI VARCHAR2(20);
-    v_ISBN VARCHAR2(20);
-    v_CodigoBibliotecario NUMBER;
+    v_DNI USERS.DNI%TYPE;
+    v_ISBN BOOKS.ISBN%TYPE;
+    v_LibrarianCode LIBRARIANS.Code%TYPE;
 BEGIN
-    -- Solicitar el DNI del usuario
-    DBMS_OUTPUT.PUT_LINE('Ingrese el DNI del usuario:');
-    v_DNI := '&DNI';
+    -- Request the DNI of the user
+    DBMS_OUTPUT.PUT_LINE('Enter the DNI of the user:');
+    v_DNI := '&v_DNI';
 
-    -- Solicitar el ISBN del libro
-    DBMS_OUTPUT.PUT_LINE('Ingrese el ISBN del libro:');
-    v_ISBN := '&ISBN';
+    -- Request the ISBN of the book
+    DBMS_OUTPUT.PUT_LINE('Enter the ISBN of the book:');
+    v_ISBN := '&v_ISBN';
 
-    -- Solicitar el código del bibliotecario
-    DBMS_OUTPUT.PUT_LINE('Ingrese el código del bibliotecario:');
-    v_CodigoBibliotecario := &CodigoBibliotecario;
+    -- Request the code of the librarian
+    DBMS_OUTPUT.PUT_LINE('Enter the code of the librarian:');
+    v_LibrarianCode := '&v_LibrarianCode';
 
-    -- Llamar al procedimiento almacenado
-    RegistrarPrestamo(v_DNI, v_ISBN, v_CodigoBibliotecario);
+    -- Call the RegisterLoan procedure
+    RegisterLoan(v_DNI, v_ISBN, v_LibrarianCode);
 
-    DBMS_OUTPUT.PUT_LINE('Préstamo registrado exitosamente.');
+    DBMS_OUTPUT.PUT_LINE('Loan registered successfully.');
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
@@ -299,155 +307,205 @@ END;
 /
 ```
 
-### Ajustes de validacion
+### Validation adjustments
 
-#### Fecha de vencimiento del préstamo.
-Si se observa bien, Copilot, no esta generando la inserción de valores en el campo FechaDevolucion de la tabla PROCEDIMIENTOS. Por lo que le solicitaremos que la fecha de devolucion de un préstamo sea 10 días después de la fecha de creación de este. (Es posible definir un parámetro para ingresar una fecha cualquiera, pero para simplificar las cosas usaremos una ventana de 10 días). Lo haremos mediante el siguiente prompt:
+#### Loan due date.
+If you look closely, Copilot is not generating the insertion of values in the ReturnDate field of the PROCEDURES table. Therefore, we will request that the return date of a loan be 10 days after its creation date. (It is possible to define a parameter to enter any date, but to simplify things we will use a 10-day window). We will do it using the following prompt:
 
-`Modifica el procedimiento RegistrarPrestamo para que el campo FechaDevolucion definido en la tabla PRESTAMOS en el esquema #file:schema.sql tenga como valor la fecha de creacion del prestamo + 10 dias.`
+`Modify the RegisterLoan procedure so that the ReturnDate field defined in the LOANS table in the schema #file:schema.sql has as its value the loan creation date + 10 days.`
 
-Ese prompt generará como salida el procedimiento almacenado con el cambio aplicado al momento de Insertar un préstamo en la base de datos.
+This prompt will generate the stored procedure with the change applied when inserting a loan into the database.
 
-#### Validación del préstamo.
-Debemos también incluir una validación que permita verificar si existe disponibilidad de libros antes de ejecutar un préstamo. Se logra mediante el siguiente prompt:
+#### Loan validation.
+We must also include a validation to check if there is availability of books before executing a loan. This is achieved using the following prompt:
 
-`Modifica el procedimiento RegistrarPrestamo para que incluya una condicion o validacion donde se verifique que el campo de DISPONIBLE del libro que se prestara no sea cero. Si el valor de ese campo es CERO, levantar un error con el mensaje de: Libro no disponible.`
+`Modify the RegisterLoan procedure to include a condition or validation where it checks that the Available field of the book to be loaned is not zero. If the value of that field is ZERO, raise an error with the message: Book not available.`
 
-Esto modificara el procedimiento almacenado para que incluya una validacion en donde se verifique que el libro a prestar se encuentre disponible.
+This will modify the stored procedure to include a validation to check that the book to be loaned is available.
 
-> **NOTA: Compilacion de procedimientos PL/SQL**  
-> Siempre que se modifique un procedimiento almacenado, este debe ser reejecutado para que se re-compile y quede actualizado en la base de datos. De lo contrario las modificaciones no se veran reflejadas.
-
-## 🔨 Paso 7. Trigger para actualizar disponibilidad después de un préstamo.
-
-El procedimiento de registrar prestamos funciona perfectamente, sin embargo, no esta controlando el conteo de la disponibilidad de los libros cada vez que ocurre un préstamo. Esta funcionalidad la ocuparemos con un trigger que cada vez que ocurra una inserción en la tabla de prestamos. Actualizará la cantidad de libros disponibles según el libro que corresponda.
-
-`Necesito que desarrolles un TRIGGER llamado ActualizarDisponibilidad. Este trigger se encargara de actualizar la disponibilidad de un libro cada vez que se realice un prestamo, es decir cada vez que se inserte un nuevo registro de prestamo. La disponibilidad de cada libro se controla con un campo llamado DISPONIBILIDAD en la tabla LIBROS. Por cada prestamo realizado deberia disminuir en 1 el valor de este campo. #file:schema.sql`
-
-_Codigo sugerido por Copilot:_
 
 ```SQL
-CREATE OR REPLACE TRIGGER ActualizarDisponibilidad
-AFTER INSERT ON PRESTAMOS
-FOR EACH ROW
-BEGIN
-    UPDATE LIBROS
-    SET Disponibles = Disponibles - 1
-    WHERE LibroID = :NEW.LibroID;
-END;
-/
-```
-Este trigger, permitirá actualizar la disponibilidad cada vez que se inserte un nuevo registro de préstamo.
-
-## 🔨 Paso 8. Procedimiento para devolución de libro.
-
-Tambien es necesario crear un procedimiento que permita registrar cuando los usuarios devuelven un libro a la biblioteca. Para ello necesitaremos modificar la tabla de prestamos y agregar un nuevo campo llamado. Devolucion el cual sera un booleano que indicara si un préstamo ha sido regresado o no.
-Posteriormente usaremos Github Copilot para generar el codigo del procedimiento PL/SQL que se encargara de esta tarea.
-
-_Prompt para la modificacion de la tabla Prestamos:_
-
-`Modifica la tabla Prestamos para que incluya ahora un campo booleano llamado Devolucion, el valor por defecto de ese campo es false. Este campo existe para validar si un prestamo ha sido retornado no.`
-
-```SQL
-ALTER TABLE PRESTAMOS ADD (Devolucion CHAR(1) DEFAULT 'F' CHECK (Devolucion IN ('T', 'F')));
-```
-
-_Prompt para la creación del procedimiento almacenado de devolución de libros:_
-
-`Quiero crear un procedimiento almacenado en PL/SQL que me permita registrar las devoluciones de los libros que habian sido prestados por la biblioteca. Este procedimiento debe validar que el prestamo se encuentre activo. Y recibira como parametro el ID del prestamo. #file:schema.sql`
-
-```SQL
-CREATE OR REPLACE PROCEDURE RegistrarDevolucion (
-    p_PrestamoID IN NUMBER
+CREATE OR REPLACE PROCEDURE RegisterLoan (
+    p_DNI IN USERS.DNI%TYPE,
+    p_ISBN IN BOOKS.ISBN%TYPE,
+    p_LibrarianCode IN LIBRARIANS.Code%TYPE
 ) AS
-    v_LibroID LIBROS.LibroID%TYPE;
-    v_Devolucion PRESTAMOS.Devolucion%TYPE;
+    v_UserID USERS.UserID%TYPE;
+    v_BookID BOOKS.BookID%TYPE;
+    v_LibrarianID LIBRARIANS.LibrarianID%TYPE;
+    v_Available BOOKS.Available%TYPE;
 BEGIN
-    -- Verificar que el préstamo existe y está activo
-    SELECT LibroID, Devolucion INTO v_LibroID, v_Devolucion
-    FROM PRESTAMOS
-    WHERE PrestamoID = p_PrestamoID;
+    -- Get the UserID from the DNI
+    SELECT UserID INTO v_UserID
+    FROM USERS
+    WHERE DNI = p_DNI;
 
-    IF v_Devolucion = 'T' THEN
-        RAISE_APPLICATION_ERROR(-20004, 'El préstamo ya ha sido devuelto.');
+    -- Get the BookID and Available from the ISBN
+    SELECT BookID, Available INTO v_BookID, v_Available
+    FROM BOOKS
+    WHERE ISBN = p_ISBN;
+
+    -- Check if the book is available
+    IF v_Available = 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Book not available');
     END IF;
 
-    -- Actualizar la tabla PRESTAMOS para marcar la devolución
-    UPDATE PRESTAMOS
-    SET FechaDevolucion = SYSDATE, Devolucion = 'T'
-    WHERE PrestamoID = p_PrestamoID;
+    -- Get the LibrarianID from the Code
+    SELECT LibrarianID INTO v_LibrarianID
+    FROM LIBRARIANS
+    WHERE Code = p_LibrarianCode;
 
-    -- Incrementar la disponibilidad del libro en la tabla LIBROS
-    UPDATE LIBROS
-    SET Disponibles = Disponibles + 1
-    WHERE LibroID = v_LibroID;
+    -- Insert the loan record with ReturnDate as LoanDate + 10 days
+    INSERT INTO LOANS (LoanID, BookID, UserID, LibrarianID, LoanDate, ReturnDate)
+    VALUES (LOANS_SEQ.NEXTVAL, v_BookID, v_UserID, v_LibrarianID, SYSDATE, SYSDATE + 10);
 
-    -- Confirmar la transacción
+    -- Update the availability of the book
+    UPDATE BOOKS
+    SET Available = Available - 1
+    WHERE BookID = v_BookID;
+
     COMMIT;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20001, 'Préstamo no encontrado.');
+        RAISE_APPLICATION_ERROR(-20001, 'User, Book, or Librarian not found');
     WHEN OTHERS THEN
         ROLLBACK;
-        RAISE_APPLICATION_ERROR(-20002, 'Error al registrar la devolución.');
-END RegistrarDevolucion;
+        RAISE;
+END RegisterLoan;
+/
+
+```
+
+> **NOTE: Compilation of PL/SQL procedures**  
+> Whenever a stored procedure is modified, it must be re-executed to recompile and update it in the database. Otherwise, the modifications will not be reflected.
+
+## 🔨 Step 7. Trigger to update availability after a loan.
+
+The loan registration procedure works perfectly, however, it is not controlling the count of book availability each time a loan occurs. We will handle this functionality with a trigger that, each time an insertion occurs in the loans table, will update the number of available books according to the corresponding book.
+
+`I need you to develop a TRIGGER called UpdateAvailability. This trigger will be responsible for updating the availability of a book each time a loan is made, that is, each time a new loan record is inserted. The availability of each book is controlled with a field called Available in the BOOKS table. For each loan made, the value of this field should decrease by 1. #file:schema.sql`
+
+_Code suggested by Copilot:_
+
+```SQL
+CREATE OR REPLACE TRIGGER UpdateAvailability
+AFTER INSERT ON LOANS
+FOR EACH ROW
+BEGIN
+    UPDATE BOOKS
+    SET Available = Available - 1
+    WHERE BookID = :NEW.BookID;
+END;
+/
+```
+This trigger will update the availability each time a new loan record is inserted.
+
+## 🔨 Step 8. Book return procedure.
+
+It is also necessary to create a procedure that allows registering when users return a book to the library. For this, we will need to modify the loans table and add a new field called Return, which will be a boolean indicating whether a loan has been returned or not. Subsequently, we will use GitHub Copilot to generate the PL/SQL procedure code that will handle this task.
+
+_Prompt for modifying the loans table:_
+
+`Modify the Loans table to now include a boolean field called Return, the default value of this field is false. This field exists to validate whether a loan has been returned or not.`
+
+```SQL
+ALTER TABLE LOANS
+ADD Return NUMBER(1) DEFAULT 0 CHECK (Return IN (0, 1));
+```
+
+_Prompt for creating the book return stored procedure:_
+
+`I want to create a stored procedure in PL/SQL that allows me to register the returns of books that had been loaned by the library. This procedure must validate that the loan is active and will receive the loan ID as a parameter. #file:schema.sql`
+
+```SQL
+CREATE OR REPLACE PROCEDURE RegisterReturn (
+    p_LoanID IN LOANS.LoanID%TYPE
+) AS
+    v_BookID BOOKS.BookID%TYPE;
+    v_ReturnStatus LOANS.Return%TYPE;
+BEGIN
+    -- Get the BookID and Return status from the LoanID
+    SELECT BookID, Return INTO v_BookID, v_ReturnStatus
+    FROM LOANS
+    WHERE LoanID = p_LoanID;
+
+    -- Check if the loan is active
+    IF v_ReturnStatus = 1 THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Loan has already been returned');
+    END IF;
+
+    -- Update the loan record to mark it as returned
+    UPDATE LOANS
+    SET Return = 1
+    WHERE LoanID = p_LoanID;
+
+    COMMIT;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Loan not found');
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE;
+END RegisterReturn;
 /
 ```
 
-> **Actualización de la disponibilidad**  
-> Si se observa bien la respuesta dada por Copilot, en este procedimiento almacenado, se ha incluido la lógica para implementar la actualización de la disponibilidad. En este caso la suprimiremos ya que crearemos un trigger que se ejecutará específicamente para esta tarea. En el ejemplo anterior **se suprime el código de la línea 22 hasta la línea 25**.
+> **Availability update**  
+> If you look closely at the response given by Copilot, in this stored procedure, the logic to implement the availability update has been included. In this case, we will remove it since we will create a trigger that will execute specifically for this task. In the previous example, **remove the code from line 22 to line 25**.
 
-### Usamos comment driven development para ejecutar el procedimiento.
-1. Creamos un nuevo archivo llamado `devolucion.sql`.
-2. Escribimos el siguiente comentario dentro del archivo SQL creado: `-- Crea un bloque anonimo que ejecute el procedimiento almacenado RegistrarDevolucion`.
-3. Presionamos `Enter` y `Tab` para ir aceptando las sugerencias que GitHub Copilot nos proporciona.
+### We use comment-driven development to execute the procedure.
+1. Create a new file called `return.sql`.
+2. Write the following comment inside the created SQL file:
+`-- Create an anonymous block that executes the stored procedure RegisterLoan`.
+3. Press `Enter` and `Tab` to accept the suggestions provided by GitHub Copilot.
 
-_Bloque de codigo resultante:_
+_Resulting code block:_
 ```SQL
--- Crea un bloque anonimo que ejecute el procedimiento almacenado RegisrarDevolucion
+-- Create an anonymous block that executes the stored procedure RegisterLoan
 
 DECLARE
-    v_PrestamoID NUMBER := &PrestamoID;
+    v_LoanID LOANS.LoanID%TYPE := &LoanID;
 BEGIN
-    -- Llamar al procedimiento almacenado
-    RegistrarDevolucion(v_PrestamoID);
-    DBMS_OUTPUT.PUT_LINE('Devolución registrada exitosamente.');
+
+    -- Call the RegisterReturn procedure
+    RegisterReturn(v_LoanID);
+
+    DBMS_OUTPUT.PUT_LINE('Return registered successfully.');
+
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
-END;
+
 ```
 
-## 🔨 Paso 9. Trigger para actualizar disponibilidad después de una devolución.
+## 🔨 Step 9. Trigger to update availability after a return.
 
-Construiremos un trigger similar al de los prestamos, pero con la diferencia que este trigger detectará los cambios de los registros cuando ocurra una devolución. Aumentando nuevamente el conteo de ejemplares de libros disponibles.
+We will build a trigger similar to the one for loans, but with the difference that this trigger will detect changes in records when a return occurs, increasing the count of available book copies again.
 
-_Prompt para generar el trigger:_
+_Prompt to generate the trigger:_
 
-`Necesito que desarrolles un TRIGGER llamado RecuperarDisponibilidad. Este trigger se encargara de actualizar la disponibilidad de un libro cada vez que se realice una devolucion, es decir cada vez que se actualice el campo Devolucion de la tabla prestamo al valor de 'T'.  La disponibilidad de cada libro se controla con un campo llamado DISPONIBILIDAD en la tabla LIBROS. Por cada devolucion de libro  realizada se debe incrementar en 1 el valor de este campo. #file:schema.sql`
+`I need you to develop a TRIGGER called UpdateAvailability. This trigger will be responsible for updating the availability of a book each time a return is made, that is, each time the Return field of the loan table is updated to the value 'T'. The availability of each book is controlled with a field called Available in the BOOKS table. For each book return made, the value of this field should increase by 1. #file:schema.sql`
 
-_Codigo sugerido por GitHub Copilot_
+_Code suggested by GitHub Copilot_
 
 ```SQL
-CREATE OR REPLACE TRIGGER RecuperarDisponibilidad
-AFTER UPDATE OF Devolucion ON PRESTAMOS
+CREATE OR REPLACE TRIGGER UpdateAvailability
+AFTER UPDATE OF Return ON LOANS
 FOR EACH ROW
-WHEN (NEW.Devolucion = 'T' AND OLD.Devolucion = 'F')
+WHEN (NEW.Return = 1)
 BEGIN
-    UPDATE LIBROS
-    SET Disponibles = Disponibles + 1
-    WHERE LibroID = :NEW.LibroID;
+    UPDATE BOOKS
+    SET Available = Available + 1
+    WHERE BookID = :NEW.BookID;
 END;
 /
 ```
 
 ## 👾 Bonus.!!
 
-Ya en este punto hemos completado las funcionalidades básicas del modelo de biblioteca propuesto, sin embargo, se puede agregar algo mas de visibilidad. Es por eso que se propone apoyarnos con copilot para generar las siguientes consultas.
+At this point, we have completed the basic functionalities of the proposed library model, however, we can add some more visibility. That is why it is proposed to use Copilot to generate the following queries.
 
-- Obtener el listado de usuarios morosos: Usuarios que poseen prestamos pendientes.
-- Obtener el listado de libros mas prestados.
-- Crear un procedimiento para el registro de nuevos libros.
-
+- Get the list of delinquent users: Users who have pending loans.
+- Get the list of most loaned books.
+- Create a procedure for registering new books.
 

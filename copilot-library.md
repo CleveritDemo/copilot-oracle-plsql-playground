@@ -1,54 +1,54 @@
-# Bilioteca Publica Copilot.
+# Copilot Public Library.
 
-Este diagrama Entidad Relacion representa la base de datos inicial con la que se trabajara este practico PL/SQL.
+This Entity-Relationship diagram represents the initial database that will be used for this PL/SQL hands-on.
 
-Consta cuatro tablas que representan lo siguiente:
+It consists of four tables that represent the following:
 
-- **Usuarios**: Son usuarios de la biblioteca los cuales realizan devoluciones y prestamo de libros.
+- **Users**: These are the users of the library who perform book returns and loans.
 
-- **Libros**: Son los documentos de texto que la biblioteca puede prestar.
+- **Books**: These are the text documents that the library can loan.
 
-- **Bibliotecarios**: Son los trabajadores de la biblioteca y son las personas encargadas de realizar/autorizar prestamos.
+- **Librarians**: These are the library workers responsible for performing/authorizing loans.
 
-- **Prestamos**: Es una entidad relacional que representa la accion de prestar un libro hacia un usuario.
+- **Loans**: This is a relational entity that represents the action of loaning a book to a user.
 
-> **Advertencia**
+> **Warning**
 >
-> Esta estructura es la estructura inicial de la base de datos. A lo largo del practico leves modificaciones le seran realizadas.
+> This structure is the initial structure of the database. Throughout the hands-on, slight modifications will be made.
 
 ```mermaid
 erDiagram
-    LIBROS {
-        NUMBER LibroID PK
-        VARCHAR ISBN UK
-        VARCHAR Titulo
-        VARCHAR Autor
-        VARCHAR Genero
-        NUMBER Disponibles
-    }
-    USUARIOS {
-        NUMBER UsuarioID PK
-        VARCHAR DNI UK
-        VARCHAR Nombre
-        VARCHAR Email UK
-        VARCHAR Telefono
-        VARCHAR NombreUsuario UK
-    }
-    BIBLIOTECARIOS {
-        NUMBER BibliotecarioID PK
-        VARCHAR Nombre
-        VARCHAR Email
-        NUMBER Codigo UK
-    }
-    PRESTAMOS {
-        NUMBER PrestamoID PK
-        NUMBER LibroID FK
-        NUMBER UsuarioID FK
-        NUMBER BibliotecarioID FK
-        DATE FechaPrestamo
-        DATE FechaDevolucion
-    }
-    LIBROS ||--o{ PRESTAMOS : "tiene"
-    USUARIOS ||--o{ PRESTAMOS : "realiza"
-    BIBLIOTECARIOS ||--o{ PRESTAMOS : "autoriza"
+    BOOKS {
+            NUMBER BookID PK
+            VARCHAR ISBN UK
+            VARCHAR Title
+            VARCHAR Author
+            VARCHAR Genre
+            NUMBER Available
+        }
+        USERS {
+            NUMBER UserID PK
+            VARCHAR DNI UK
+            VARCHAR Name
+            VARCHAR Email UK
+            VARCHAR Phone
+            VARCHAR Username UK
+        }
+        LIBRARIANS {
+            NUMBER LibrarianID PK
+            VARCHAR Name
+            VARCHAR Email
+            NUMBER Code UK
+        }
+        LOANS {
+            NUMBER LoanID PK
+            NUMBER BookID FK
+            NUMBER UserID FK
+            NUMBER LibrarianID FK
+            DATE LoanDate
+            DATE ReturnDate
+        }
+        BOOKS ||--o{ LOANS : "has"
+        USERS ||--o{ LOANS : "makes"
+        LIBRARIANS ||--o{ LOANS : "authorizes"
 ```
