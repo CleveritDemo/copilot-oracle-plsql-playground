@@ -1,72 +1,72 @@
-# Instalación de Oracle Express Edition en sistemas Apple Silicon.
+# Installation of Oracle Express Edition on Apple Silicon systems
 
-Como bien sabemos, no es posible ejecutar una imagen Oracle Express Edition directamente en sistemas con procesadores Apple Silicon porque Oracle Express Edition está diseñado para arquitecturas x86_64. Los procesadores Apple Silicon utilizan una arquitectura ARM, que es diferente de la arquitectura x86_64. Esto significa que el software compilado para x86_64 no puede ejecutarse nativamente en procesadores ARM sin una capa de compatibilidad o emulación que traduzca las instrucciones de una arquitectura a otra. Por eso, necesitamos herramientas como QEMU y Colima para emular la arquitectura x86_64 y permitir la ejecución de Oracle Express Edition en sistemas Apple Silicon.
+As we know, it is not possible to run an Oracle Express Edition image directly on systems with Apple Silicon processors because Oracle Express Edition is designed for x86_64 architectures. Apple Silicon processors use an ARM architecture, which is different from the x86_64 architecture. This means that software compiled for x86_64 cannot run natively on ARM processors without a compatibility or emulation layer that translates instructions from one architecture to another. Therefore, we need tools like QEMU and Colima to emulate the x86_64 architecture and allow Oracle Express Edition to run on Apple Silicon systems.
 
-- **[QEMU](https://www.qemu.org/)**: Es un emulador y virtualizador de hardware de código abierto que permite ejecutar programas y sistemas operativos diseñados para una arquitectura de hardware diferente a la del host. También puede ser utilizado para crear y gestionar máquinas virtuales.
+- **[QEMU](https://www.qemu.org/)**: It is an open-source hardware emulator and virtualizer that allows running programs and operating systems designed for a different hardware architecture than the host. It can also be used to create and manage virtual machines.
 
-- **[Colima](https://github.com/abiosoft/colima#installation)**: Es una herramienta que facilita la ejecución de contenedores Docker en macOS, especialmente en sistemas con chips Apple Silicon (M1, M2, etc.). Utiliza QEMU para emular la arquitectura x86_64, permitiendo así la compatibilidad con imágenes de contenedores que no son nativamente compatibles con la arquitectura ARM. Colima proporciona una experiencia de usuario similar a Docker Desktop, pero optimizada para entornos Apple Silicon.
+- **[Colima](https://github.com/abiosoft/colima#installation)**: It is a tool that facilitates running Docker containers on macOS, especially on systems with Apple Silicon chips (M1, M2, etc.). It uses QEMU to emulate the x86_64 architecture, thus allowing compatibility with container images that are not natively compatible with the ARM architecture. Colima provides a user experience similar to Docker Desktop but optimized for Apple Silicon environments.
 
-Para lograr ejecutar una imagen de Oracle XE (Express Edition), realizaremos los siguientes pasos:
+To run an Oracle XE (Express Edition) image, we will follow these steps:
 
-## ⚙️ 1. Instalación de entorno de virtualización QEMU
+## ⚙️ 1. Installation of QEMU virtualization environment
 
-Para instalar QEMU usaremos el manejador de paquetes de `homebrew`. Ejecutamos el siguiente comando para instalar QEMU:
+To install QEMU, we will use the `homebrew` package manager. We run the following command to install QEMU:
 
 ```sh
 brew install qemu
 ```
 
-Se comenzará a instalar el software, puede tomar unos cuantos minutos antes de finalizar la instalación.
+The software installation will begin, and it may take a few minutes to complete.
 
-Una vez finalizado, verificamos que el binario `qemu-system-x86_64` se encuentre registrado en la variable `$PATH`. Para verificarlo, ejecutamos el siguiente comando:
+Once finished, we verify that the `qemu-system-x86_64` binary is registered in the `$PATH` variable. To check this, we run the following command:
 
 ```sh
 which qemu-system-x86_64
 ```
-Si el comando anterior no devuelve una ruta, significa que QEMU no está en el `$PATH`. Asegúrate de que el directorio donde se encuentra QEMU esté incluido en tu variable de entorno `$PATH`.
+If the previous command does not return a path, it means that QEMU is not in the `$PATH`. Make sure that the directory where QEMU is located is included in your `$PATH` environment variable.
 
-Si el comando anterior devuelve la ruta de instalación, QEMU está correctamente instalado.
+If the previous command returns the installation path, QEMU is correctly installed.
 
-## 🖥️ 2. Instalación de Colima
+## 🖥️ 2. Installation of Colima
 
-Para instalar Colima, ejecutamos el siguiente comando usando `homebrew`:
+To install Colima, we run the following command using `homebrew`:
 
 ```bash
 brew install colima
 ```
-Esto instalará el paquete en nuestro sistema. Una vez instalado, procederemos con la configuración de un entorno virtual para que Docker pueda ejecutarse sobre Colima. 
+This will install the package on our system. Once installed, we will proceed with the configuration of a virtual environment so that Docker can run on Colima.
 
-Para inicializar un nuevo entorno que permita ejecutar Docker, ejecutamos el siguiente comando:
+To initialize a new environment that allows running Docker, we run the following command:
 
 ```bash
 colima start --arch x86_64 --memory 4
 ```
-_El comando anterior lo que está haciendo es crear un nuevo entorno virtual que emula la arquitectura x64 y le asigna un espacio de memoria RAM de 4GB para ejecutar aplicaciones. 4GB son suficientes para manejar holgadamente la instancia de Oracle._
+_The previous command creates a new virtual environment that emulates the x64 architecture and assigns 4GB of RAM to run applications. 4GB is enough to comfortably handle the Oracle instance._
 
-Puedes verificar el estado de ejecución de Colima con el siguiente comando:
+You can check the running status of Colima with the following command:
 
 ```bash
 colima status
 ```
 
-Hecho esto, ahora es posible ejecutar el comando de creación del contenedor Docker como usualmente lo haríamos.
+Once this is done, it is now possible to run the Docker container creation command as we usually would.
 
-## 🚀 3. Ejecución de Oracle Express mediante Docker
+## 🚀 3. Running Oracle Express via Docker
 
-Con todos los pasos anteriores ejecutados, ahora es posible ejecutar el comando de Docker para crear el contenedor que ejecutará una instancia de Oracle XE.
+With all the previous steps executed, it is now possible to run the Docker command to create the container that will run an Oracle XE instance.
 
 ```bash
 docker run -d --name "oracle-xe" -p 1521:1521 -p 5500:5500 -e ORACLE_PWD="Password123" -e ORACLE_CHARACTERSET="AL32UTF8" container-registry.oracle.com/database/express:21.3.0-xe
 ```
-_El comando anterior descargará una imagen Oracle Express en su versión 21.3.0 y generará un contenedor con una instancia de base de datos Oracle con la contraseña Password123._
+_The previous command will download an Oracle Express image in version 21.3.0 and generate a container with an Oracle database instance with the password Password123._
 
-Una vez levantado el contenedor, podemos verificarlo ejecutando el comando:
+Once the container is up, we can verify it by running the command:
 
 ```bash
 docker ps
 ```
 
-La salida del terminal debería verse similar a esta:
+The terminal output should look similar to this:
 
 ```bash
 user@localhost $ docker ps
@@ -74,14 +74,14 @@ CONTAINER ID   IMAGE                                                      COMMAN
 5de20f8603bf   container-registry.oracle.com/database/express:21.3.0-xe   "/bin/bash -c $ORACL…"   12 hours ago   Up 12 hours (healthy)   0.0.0.0:1521->1521/tcp, :::1521->1521/tcp, 0.0.0.0:5500->5500/tcp, :::5500->5500/tcp   oracle-xe
 ```
 
-### Validar la conexión con la base de datos
+### Validate the connection to the database
 
-Para probar que podamos conectarnos a la BD, podemos usar [SQL Developer extension tools](https://marketplace.visualstudio.com/items?itemName=Oracle.sql-developer) para Visual Studio Code. (Se instala desde el panel de extensiones de VS Code).
+To test that we can connect to the DB, we can use [SQL Developer extension tools](https://marketplace.visualstudio.com/items?itemName=Oracle.sql-developer) for Visual Studio Code. (It is installed from the VS Code extensions panel).
 
-Y generamos una nueva conexión siguiendo los siguientes parámetros:
+And we create a new connection following these parameters:
 
-**Parámetros de Conexión:**
-| Parámetro           | Valor         |
+**Connection Parameters:**
+| Parameter           | Value         |
 |---------------------|---------------|
 | Connection Name     | SYSADMIN      |
 | Authentication Type | Default       |
@@ -93,52 +93,52 @@ Y generamos una nueva conexión siguiendo los siguientes parámetros:
 | Type                | Service Name  |
 | Service Name        | XEPDB1        |
 
-Una vez introducidos, debemos hacer clic en el botón **Test** y debería arrojarnos una conexión exitosa a la instancia.
+Once entered, we must click the **Test** button, and it should show a successful connection to the instance.
 
-# 🧠 Resolución de problemas y reversión de ajustes
+# 🧠 Troubleshooting and reverting settings
 
-## 🚫 Conexión de base de datos fallida
+## 🚫 Database connection failed
 
-En ocasiones, la conexión de la base de datos de Oracle es fallida. En este punto, la emulación x64 no es perfecta con Colima y en ocasiones puede resultar en fallos. Para este caso, basta con esperar unos minutos adicionales para que el contenedor estabilice su inicialización interna y nuevamente ejecutar.
+Sometimes, the Oracle database connection fails. At this point, x64 emulation is not perfect with Colima and can sometimes result in failures. In this case, just wait a few additional minutes for the container to stabilize its internal initialization and try again.
 
-Si esto aún no funciona, se sugiere eliminar el contenedor y eliminar el entorno de virtualización creado con Colima y volver a crearlo.
+If this still does not work, it is suggested to delete the container and delete the virtual environment created with Colima and recreate it.
 
-## ⛑️ Eliminación de entorno
+## ⛑️ Deleting the environment
 
-Para eliminar un entorno creado, debemos realizar pasos adicionales a los usuales debido a que al ejecutar el contenedor mediante Colima no tendremos visibilidad del mismo a través de Docker Desktop.
+To delete a created environment, we must perform additional steps because when running the container through Colima, we will not have visibility of it through Docker Desktop.
 
-**Detener y eliminar el contenedor de Oracle**: 
+**Stop and delete the Oracle container**: 
 
-Para detener el contenedor, realizamos la ejecución de los siguientes comandos:
+To stop the container, we run the following commands:
 
 ```sh
 docker ps
 ```
-_Obtenemos el listado de contenedores activos y tomamos nota del ID del contenedor de la instancia Oracle._
+_We get the list of active containers and note the ID of the Oracle instance container._
 
-Luego, con el ID del contenedor, podemos ejecutar los siguientes comandos y detenerlo para posteriormente eliminarlo.
+Then, with the container ID, we can run the following commands to stop it and then delete it.
 
 ```sh
-docker stop <<container_id>>   # Detiene el contenedor en ejecución
-docker rm <<container_id>>     # Elimina el contenedor
+docker stop <<container_id>>   # Stops the running container
+docker rm <<container_id>>     # Deletes the container
 ```
 
-**Detener y eliminar el entorno virtual de Colima**
+**Stop and delete the Colima virtual environment**
 
-Para poder detener y eliminar el entorno virtual de Colima, ejecutaremos los siguientes comandos:
+To stop and delete the Colima virtual environment, we run the following commands:
 
 ```bash
-colima stop   # Esto detendrá cualquier instancia virtual que hayamos creado directamente con Colima.
+colima stop   # This will stop any virtual instance we have created directly with Colima.
 ```
 
 ```bash
-colima delete # Esto eliminará cualquier instancia virtual que hayamos creado directamente con Colima.
+colima delete # This will delete any virtual instance we have created directly with Colima.
 ```
 
-Una vez detenido y eliminado tanto el contenedor de Docker como el entorno virtual de Colima, repetimos nuevamente los pasos de instalación para tener un nuevo entorno e instalar una instancia de Oracle Express.
+Once both the Docker container and the Colima virtual environment are stopped and deleted, we repeat the installation steps to have a new environment and install an Oracle Express instance.
 
-> **NOTA: Descarga de imagen Oracle XE**  
-> La imagen de Oracle XE siempre se volverá a descargar cada vez que recreemos el entorno virtual, por lo que es necesario considerar los tiempos de descarga según nuestra conexión de internet.
+> **NOTE: Oracle XE image download**  
+> The Oracle XE image will always be downloaded again each time we recreate the virtual environment, so it is necessary to consider the download times according to our internet connection.
 
-> **NOTA: Versión de Colima**  
-> Si teníamos Colima instalado en nuestras máquinas previamente, es conveniente realizar una actualización de este paquete ejecutando el siguiente comando `brew upgrade colima`.
+> **NOTE: Colima version**  
+> If we had Colima installed on our machines previously, it is advisable to update this package by running the following command `brew upgrade colima`.
