@@ -115,6 +115,8 @@ GRANT ALTER ANY TRIGGER TO AdminBL;
 -- Grant additional necessary permissions
 GRANT CREATE SESSION TO AdminBL;
 ```
+> Create a new file called `admin-user.sql` inside a folder called `setup` and run the script to create the user. Once the user is created, we will connect to the database using the new user. 
+
 
 > **Troubleshooting - Error: ORA-65096**  
 > When we try to create the library user, we get the following error message:  
@@ -189,6 +191,9 @@ CREATE TABLE LOANS (
     CONSTRAINT fk_librarian FOREIGN KEY (LibrarianID) REFERENCES LIBRARIANS(LibrarianID)
 );
 ```
+```SQL
+
+> Create a new file called `schema.sql` inside a folder called `setup` and run the script to create the tables.
 
 ## 🔨 Step 5. Data generation.
 
@@ -223,6 +228,12 @@ CREATE SEQUENCE PRESTAMOS_SEQ START WITH 1 INCREMENT BY 1;
 ```
 
 ```SQL
+-- Create the sequence for LOANS table
+CREATE SEQUENCE LOANS_SEQ
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
 CREATE OR REPLACE PROCEDURE RegisterLoan (
     p_DNI IN USERS.DNI%TYPE,
     p_ISBN IN BOOKS.ISBN%TYPE,
@@ -247,29 +258,35 @@ BEGIN
     FROM LIBRARIANS
     WHERE Code = p_LibrarianCode;
 
-    -- Insert the loan record
+    -- Insert the loan record into the LOANS table
     INSERT INTO LOANS (LoanID, BookID, UserID, LibrarianID, LoanDate)
     VALUES (LOANS_SEQ.NEXTVAL, v_BookID, v_UserID, v_LibrarianID, SYSDATE);
 
-    -- Update the availability of the book
-    UPDATE BOOKS
-    SET Available = Available - 1
-    WHERE BookID = v_BookID;
-
+    -- Commit the transaction
     COMMIT;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        RAISE_APPLICATION_ERROR(-20001, 'User, Book, or Librarian not found');
+        RAISE_APPLICATION_ERROR(-20001, 'User, Book, or Librarian not found.');
     WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE;
+        RAISE_APPLICATION_ERROR(-20002, 'An error occurred while registering the loan.');
 END RegisterLoan;
 /
 ```
 
+> Save the script in a file called `RegisterLoan.sql` inside the `processes/procedures` folder. This script will be executed to create the stored procedure in the database.
+
+Run the script to create the stored procedure in the database.
+
+### 🚧 Troubleshooting
+
+> `ORA-01031: insufficient privileges`
+> If the error `ORA-01031: insufficient privileges` occurs when executing the script, it is because the user does not have the necessary permissions to create the stored procedure. To fix this, copy the error message and ask Copilot to generate the necessary permissions to execute the script.
+
+```SQL
+GRANT CREATE SEQUENCE TO AdminBL;
+```
+
 To use the stored procedure, it is enough to invoke it from a query or an anonymous block. We will ask Copilot to construct an anonymous block where it requests input data from the user to execute the procedure.
-
-
 
 _Prompt to generate anonymous PL/SQL block and procedure execution_
 
@@ -450,18 +467,20 @@ END RegisterReturn;
 /
 ```
 
+> Save the script in a file called `RegisterReturn.sql` inside the `processes/procedures` folder. This script will be executed to create the stored procedure in the database.
+
 > **Availability update**  
 > If you look closely at the response given by Copilot, in this stored procedure, the logic to implement the availability update has been included. In this case, we will remove it since we will create a trigger that will execute specifically for this task. In the previous example, **remove the code from line 22 to line 25**.
 
 ### We use comment-driven development to execute the procedure.
 1. Create a new file called `return.sql`.
 2. Write the following comment inside the created SQL file:
-`-- Create an anonymous block that executes the stored procedure RegisterLoan`.
+`-- Create an anonymous block that executes the stored procedure RegisterReturn`.
 3. Press `Enter` and `Tab` to accept the suggestions provided by GitHub Copilot.
 
 _Resulting code block:_
 ```SQL
--- Create an anonymous block that executes the stored procedure RegisterLoan
+-- Create an anonymous block that executes the stored procedure RegisterReturn
 
 DECLARE
     v_LoanID LOANS.LoanID%TYPE := &LoanID;
