@@ -191,7 +191,6 @@ CREATE TABLE LOANS (
     CONSTRAINT fk_librarian FOREIGN KEY (LibrarianID) REFERENCES LIBRARIANS(LibrarianID)
 );
 ```
-```SQL
 
 > Create a new file called `schema.sql` inside a folder called `setup` and run the script to create the tables.
 
